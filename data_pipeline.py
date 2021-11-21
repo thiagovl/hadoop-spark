@@ -25,6 +25,9 @@ class Pipeline:
 
             # Classe Ingest - ingestão de dados - captura de dados.
             ingest_process = ingest.Ingest(self.spark)
+            print('Reading table Postgres ')
+            # ingest_process.read_from_pg() 
+            ingest_process.read_from_pg_using_jdbc_driver() 
             ingest_df = ingest_process.ingest_data()
             # ingest_df.show()
 
@@ -33,6 +36,7 @@ class Pipeline:
             transform_df = transform_process.tranform_data(ingest_df)
 
             persist_process = persist.Persist(self.spark)
+            # persist_process.insert_into_pg()
             persist_process.persist_data(transform_df)
 
             logging.info(' Method run_pipeline finished... \n COMPLETED SUCCESSFULLY PIPELINE !!! \n------------------------------------------------ \n') # Captura de log - fim da classe run_pipeline
@@ -43,8 +47,10 @@ class Pipeline:
         return
 
     # Cria a sessão do Spark, ou seja, é a porta de entrada para os comandos no Spark
+    # .config("spark.jars", "postgresql-42.3.1")\ ---> conecta no banco de dados via jdbc
     def create_spark_session(self):
         self.spark = SparkSession.builder.appName('Meu app spark')\
+                            .config("spark.driver.extraClassPath", "postgresql-42.3.1.jar")\
                             .enableHiveSupport()\
                             .getOrCreate()
 

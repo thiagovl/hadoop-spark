@@ -19,12 +19,13 @@ class Transform:
             logging.info("Transform")
             # Captura de logs - inicio da classe tranform_data
             logging.info('Method tranform_data started...')
-            df1 = df.na.drop() # Retira as linhas vazias
+            # df1 = df.na.drop() # Retira as linhas vazias
+            df1 = df.na.fill('Unknown', ['author_name']) # Irá substituir os valores nulos na coluna author_name por Unknown
+            df2 = df1.na.fill('0', ['no_of_reviews']) # Irá substituir os valores nulos na coluna no_of_reviews por 0
             logging.info('Method tranform_data finished...') # Captura de log - fim da classe tranform_data
-            df1.orderBy("course_id").show()
+            df2.orderBy("course_id").show()
             print(' ---- COMPLETED SUCCESSFULLY TRANSFORM !!! ---- \n -----------------------------------------------------------------------\n')
         except Exception as e:
             logger.error("An in occured class Transform >>> " + str(e) + '\n  ---- END ----  \n------------------------------------------------ \n')
             raise Exception('An error class Transform!!!') # Envia o erro para a classe Pipeline
-            sys.exit(1)
-        return df1
+        return df2

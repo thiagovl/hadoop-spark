@@ -3,7 +3,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import IntegerType
 import logging # log
 import logging.config # busca as configurações do arquivo resources/configs/loggin.conf
-import sys
+import pandas.io.sql as sqlio
+import psycopg2
 
 class Ingest:
 
@@ -28,7 +29,6 @@ class Ingest:
         except Exception as e:
             logger.error("An in occured class Ingest >>> " + str(e) + '\n  ---- END ----  \n------------------------------------------------ \n')
             raise Exception('An error class Ingest!!!') # Envia o erro para a classe Pipeline
-            sys.exit(1)
         return df
 
         # # Imprime todos os dados
@@ -58,3 +58,24 @@ class Ingest:
         # # Classifica pela coluna Salary
         # print("=== Classifica em ordem crescente pela coluna Salary ===")
         # df.orderBy("Salary").show()
+    
+    # Criando a conexão com o banco de dados Postgres para ler dados
+    def read_from_pg(self):
+        connection = psycopg2.connect(user='postgres', password='123', host='localhost', database='futurexschema')  
+        cursor = connection.cursor()
+        sql_query = "SELECT * FROM public.futurex_course_catalog;"
+        pdDF = sqlio.read_sql_query(sql_query, connection)
+        sparkDF = self.spark.createDataFrame(pdDF)
+        sparkDF.show()
+    
+    # Criando a conexão com o banco de dados Postgres com jdbc
+    def read_from_pg_using_jdbc_driver(self):
+        jdbcDF = self.spark.read\
+            .format('jdbc')\
+            .option('url', 'jdbc:postgresql://localhost:5432/futurexschema')\
+            .option('dbtable', 'futurex_course_catalog')\
+            .option('user', 'postgres')\
+            .option('password', '123')\
+            .load()
+        
+        jdbcDF.show()

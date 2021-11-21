@@ -1,0 +1,22 @@
+# Variaveis de ambiente
+export SPARK_LOCAL_IP=127.0.0.1
+
+# Banco de dados
+create table if not exists futurex_course_catalog (
+	course_id INTEGER NOT NULL, 
+	course_name CHARACTER VARYING COLLATE pg_catalog."default" NOT NULL, 
+	author_name CHARACTER VARYING COLLATE pg_catalog."default" NOT NULL, 
+	course_section JSON NOT NULL,
+	creation_data DATE NOT NULL,
+	CONSTRAINT futurex_course_catalog_pkey PRIMARY KEY (course_id))
+
+INSERT INTO public.futurex_course_catalog(
+	course_id, course_name, author_name, course_section, creation_data)
+	VALUES (1, 'Java', 'Thiago Lemes', '{"section": 1, "title": "Java c/ Spring Boot"}', '2021-01-01');
+
+CREATE TABLE futures_course(
+	course_id CHARACTER  VARYING COLLATE pg_catalog."default" NOT NULL,  
+	course_name CHARACTER VARYING COLLATE pg_catalog."default" NOT NULL, 
+	author_name CHARACTER VARYING COLLATE pg_catalog."default" NOT NULL, 
+	no_of_reviews CHARACTER VARYING COLLATE pg_catalog."default" NOT NULL
+)
